@@ -30,8 +30,12 @@ const Game = () => {
             const data = await response.json();
             const arr = data.playersArr;
             const a = getRandomPlayerId(arr)
-            arr.splice(a, 1)
-            const b = getRandomPlayerId(arr);
+            arr.splice(a, 1);
+            let b = getRandomPlayerId(arr);
+            while(a == b)
+            {
+                b = getRandomPlayerId(arr);
+            }
             arr.splice(b, 1)
             await fetchPlayers(a, b);
             setPlayersArr(arr);

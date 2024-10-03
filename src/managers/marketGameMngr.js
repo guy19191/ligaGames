@@ -27,7 +27,7 @@ export class marketGames{
         const a = Number(playerReveled.marketValue.replace(/\D/g, "")) * multiplyA;
 
          switch (answer) {
-            case 'equle':
+            case 'equal':
                 return a == b;
             case 'higher':
                 return a > b
