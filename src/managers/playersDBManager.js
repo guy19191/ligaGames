@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import fs from 'fs'
 export class playersDBManager{
      _players;
      _clubs;
@@ -30,7 +30,10 @@ export class playersDBManager{
      set clubs(clubs) {
         this._clubs = clubs;
     }
-    
+    async getOfflinePlayers(){
+         const playersString = await fs.readFileSync("./players.txt")
+        this.players = JSON.parse(playersString);
+    }
      async getAllPlayers(){
         const clubsList = await axios('https://transfermarkt-api.fly.dev/competitions/ISR1/clubs');
          const clubsProfilesPromise = clubsList.data.clubs.map(club => axios(`https://transfermarkt-api.fly.dev/clubs/${club.id}/profile`));
@@ -41,11 +44,12 @@ export class playersDBManager{
         const playersPromises = playersIds.map(playerId => axios(`https://transfermarkt-api.fly.dev/players/${playerId}/profile`))
         const requestPlayers = await Promise.all(playersPromises);
          this.players = requestPlayers.map(player => {
-             const clubId = player.data.club.id;
-             const club = clubsProfilesData.find(club => club.data.id === clubId);
+             const clubId = player?.data?.club?.id;
+             const club = clubsProfilesData.find(club => club?.data?.id === clubId);
              player.data.club = club?.data ? club?.data : player.data.club;
              return player.data;
          });
+        fs.writeFileSync("./players.txt", JSON.stringify(this.players))
      }
 
 
