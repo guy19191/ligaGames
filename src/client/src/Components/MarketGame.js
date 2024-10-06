@@ -32,7 +32,7 @@ const Game = ({game}) => {
             const a = getRandomPlayerId(arr)
             arr.splice(a, 1);
             let b = getRandomPlayerId(arr);
-            while(a == b)
+            while(arr[a] == arr[b])
             {
                 b = getRandomPlayerId(arr);
             }
@@ -70,7 +70,7 @@ const Game = ({game}) => {
         if (ans) {
             setScore(score + 1);
             let a = getRandomPlayerId(playersArr)
-            while(a == nextPlayerId) {
+            while(playersArr[a] == nextPlayerId) {
                 a = getRandomPlayerId(playersArr);
             }
             playersArr.splice(a, 1);
