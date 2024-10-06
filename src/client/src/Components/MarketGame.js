@@ -4,7 +4,7 @@ import Player from './Player';
 import GameControls from './GameControls';
 
 
-const Game = () => {
+const Game = ({game}) => {
     const [currentPlayer, setCurrentPlayer] = useState(null);
     const [nextPlayer, setNextPlayer] = useState(null);
     const [score, setScore] = useState(0);
@@ -12,7 +12,7 @@ const Game = () => {
     const [playersArr, setPlayersArr] = useState([]);
     const [currentPlayerId, setCurrentPlayerId] = useState(0);
     const [nextPlayerId, setNextPlayerId] = useState(0);
-
+    const [whatGame, setWhatGame] = useState(game);
     useEffect(() => {
         startGame();
         }, []);
@@ -26,7 +26,7 @@ const Game = () => {
 
     const startGame = async () => {
         try {
-            const response = await fetch(`/market/v2/startMarketGame`);
+            const response = await fetch(`/market/v2/startMarketGame?whatGame=${whatGame}`);
             const data = await response.json();
             const arr = data.playersArr;
             const a = getRandomPlayerId(arr)
@@ -37,7 +37,7 @@ const Game = () => {
                 b = getRandomPlayerId(arr);
             }
             arr.splice(b, 1)
-            await fetchPlayers(a, b);
+            await fetchPlayers(arr[a], arr[b]);
             setPlayersArr(arr);
         } catch (error) {
             console.error('Error fetching player data:', error);
@@ -58,7 +58,7 @@ const Game = () => {
     };
     const getAnswer = async (guess) => {
         try {
-            const response = await fetch(`/market/v2/checkAnswer?guess=${guess}&reveledPlayerId=${currentPlayerId}&hiddinPlayerId=${nextPlayerId}`);
+            const response = await fetch(`/market/v2/checkAnswer?whatGame=${whatGame}&&guess=${guess}&reveledPlayerId=${currentPlayerId}&hiddinPlayerId=${nextPlayerId}`);
             const data = await response.json();
             return data.answer;
         } catch (error) {
@@ -69,10 +69,13 @@ const Game = () => {
         const ans = await getAnswer(guess);
         if (ans) {
             setScore(score + 1);
-            const a = getRandomPlayerId(playersArr)
+            let a = getRandomPlayerId(playersArr)
+            while(a == nextPlayerId) {
+                a = getRandomPlayerId(playersArr);
+            }
             playersArr.splice(a, 1);
             setPlayersArr(playersArr);
-            await fetchPlayers(nextPlayerId, a);
+            await fetchPlayers(nextPlayerId, playersArr[a]);
         } else {
             await fetchPlayers(nextPlayerId, nextPlayerId);
             await setGameOver(true);
@@ -91,25 +94,28 @@ const Game = () => {
                 <div className="game-over">
                     <h2>Game Over!</h2>
                     <div className="final-player">
-                        <Player player={currentPlayer} />
+                        <Player playerName={currentPlayer?.name} playerStat={currentPlayer[whatGame]} playerImg={currentPlayer?.imageURL || currentPlayer?.club?.image} />
                     </div>
                     <p>Your score: {score}</p>
                     <button onClick={restartGame}>Play Again</button>
                 </div>
             ) : (
+                currentPlayer && nextPlayer ? (
                 <>
+
                     <div className="next-player">
                         <h2>Player</h2>
-                        <Player player={currentPlayer} />
+                        <Player playerName={currentPlayer?.name} playerStat={currentPlayer[whatGame]} playerImg={currentPlayer?.imageURL || currentPlayer?.club?.image} />
                         <p>Your score: {score}</p>
                     </div>
                     <div className="next-player">
                         <h2>Player</h2>
-                        <Player player={nextPlayer} />
+                        <Player playerName={nextPlayer?.name} playerStat={nextPlayer[whatGame]} playerImg={nextPlayer?.imageURL || nextPlayer?.club?.image} />
                         <GameControls handleGuess={handleGuess} />
                     </div>
                 </>
-            )}
+
+                ) : (<h1>loading</h1>))}
         </div>
     );
 };

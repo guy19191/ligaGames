@@ -3,7 +3,8 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const GameMenu = ({ onSelectGame }) => {
     const games = [
-        { id: 'market-value', name: 'Market Value Game', description: 'נחש את המחיר של שחקני ליגת העל' }
+        { id: 'marketValue', name: 'Market Value Game', description: 'נחש את המחיר של שחקני ליגת העל' },
+        { id: 'totalGoals', name: 'Goals Game', description: 'נחש את השערים של שחקני ליגת העל' }
     ];
 
     const [currentIndex, setCurrentIndex] = useState(0);

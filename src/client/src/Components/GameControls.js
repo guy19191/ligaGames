@@ -5,7 +5,6 @@ const GameControls = ({ handleGuess }) => {
         <div className="buttons">
             <button onClick={() => handleGuess('higher')}>Higher</button>
             <button onClick={() => handleGuess('lower')}>Lower</button>
-            <button onClick={() => handleGuess('equal')}>Equal</button>
         </div>
     );
 };

@@ -7,8 +7,8 @@ const App = () => {
     const [gameSelected, setGameSelected] = useState(false);
 
     const selectGame = (game) => {
-        if (game === 'market-value') {
-            setGameSelected(true);
+        if (game) {
+            setGameSelected(game);
         }
     };
 
@@ -18,7 +18,7 @@ const App = () => {
             {!gameSelected ? (
                 <GameMenu onSelectGame={selectGame} />
             ) : (
-                <Game />
+                <Game game={gameSelected}/>
             )}
         </div>
     );

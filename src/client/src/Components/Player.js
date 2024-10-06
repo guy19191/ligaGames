@@ -1,12 +1,12 @@
 import React from 'react';
 
-const Player = ({ player }) => {
+const Player = ({ playerName, playerStat, playerImg }) => {
     return (
         <div className="player">
-            {player?.imageURL ? (<img src={player?.imageURL} alt={player?.name} />) : (<img src={player?.club?.image} alt={player?.club?.name} />)}
+            <img src={playerImg} alt={playerName} />
                 <div className="player-info">
-                <div className="player-name">{player?.name}</div>
-                {player?.marketValue ? (<div className="player-value">{player?.marketValue}</div>):(<div className="player-value">?</div>)
+                <div className="player-name">{playerName}</div>
+                {playerStat ? (<div className="player-value">{playerStat}</div>):(<div className="player-value">?</div>)
                     }
             </div>
         </div>

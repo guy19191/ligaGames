@@ -5,12 +5,19 @@ export class marketGames{
      playerReveled;
      playerHidden;
      player;
-
+     whatGame;
+     instance;
     constructor() {
-        const playersDB = playersDBManager.getInstance();
-        this.players = playersDB.players;
+
     }
-    
+
+    static getInstance() {
+        if (!marketGames.instance) {
+            marketGames.instance = new marketGames();
+        }
+        return marketGames.instance;
+    }
+
      getRandomPlayer(){
         const playerRandomNum = Math.floor(Math.random() * this.players.length);
         this.playerHidden = this.players[playerRandomNum];
@@ -18,21 +25,15 @@ export class marketGames{
         return {name : this.playerHidden.name};
     }
     
-     getAnswer(answer, aId ,bId){
-        const playerHidden = bId ? this.players[Number(aId)]: this.playerReveled;
-        const playerReveled = aId ? this.players[Number(bId)]: this.playerHidden;
-        const multiplyB = playerHidden.marketValue.includes('m') ? 1000 : 1;
-        const multiplyA = playerReveled.marketValue.includes('m') ? 1000 : 1;
-        const b = Number(playerHidden.marketValue.replace(/\D/g, "")) *multiplyB;
-        const a = Number(playerReveled.marketValue.replace(/\D/g, "")) * multiplyA;
-
+     getAnswer(answer, aId, bId, stats){
+         stats = stats === 'marketValue' ? 'value' : stats;
+        const playerHidden = this.players[aId][stats];
+        const playerReveled = this.players[bId][stats];
          switch (answer) {
-            case 'equal':
-                return a == b;
             case 'higher':
-                return a > b
+                return playerHidden <= playerReveled
             case 'lower':
-                return a < b
+                return playerHidden >= playerReveled
         }
     }
 
@@ -41,11 +42,27 @@ export class marketGames{
         return this.playerReveled;
     }
 
-    getPlayersArr(){
+    getPlayersArr(whatGame){
+        const playersDB = playersDBManager.getInstance();
+        this.players = {};
         const playersId = [];
-        for (let i=0; i < this.players.length ; i++){
-
-            playersId.push(i++);
+        switch (whatGame){
+            case 'marketValue':
+                for (let id in playersDB.players){
+                    if(playersDB.players[id].value && playersDB.players[id].value >= 200){
+                        this.players[id] = playersDB.players[id];
+                        playersId.push(id);
+                    }
+                }
+                break;
+            case 'totalGoals':
+                for (let id in playersDB.players){
+                    if(playersDB.players[id].totalGoals && playersDB.players[id].totalGoals >= 13){
+                        this.players[id] = playersDB.players[id];
+                        playersId.push(id);
+                    }
+                }
+                break;
         }
         return playersId
     }

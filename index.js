@@ -1,7 +1,7 @@
 import {playersDBManager} from "./src/managers/playersDBManager.js"
 import express from 'express';
 import marketRoutes from './src/routes/marketRoutes.js'
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 const offline = process.env.OFFLINE || false;
 import cors from 'cors';
 import * as path from "path";

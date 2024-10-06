@@ -35,22 +35,41 @@ export class playersDBManager{
         this.players = JSON.parse(playersString);
     }
      async getAllPlayers(){
-        const clubsList = await axios('https://transfermarkt-api.fly.dev/competitions/ISR1/clubs');
-         const clubsProfilesPromise = clubsList.data.clubs.map(club => axios(`https://transfermarkt-api.fly.dev/clubs/${club.id}/profile`));
+        const clubsList = await axios('http://localhost:8000/competitions/ISR1/clubs');
+         const clubsProfilesPromise = clubsList.data.clubs.map(club => axios(`http://localhost:8000/clubs/${club.id}/profile`));
          const clubsProfilesData = await Promise.all(clubsProfilesPromise);
-         const promiseArr = clubsList.data.clubs.map(club => axios(`https://transfermarkt-api.fly.dev/clubs/${club.id}/players`));
+         const promiseArr = clubsList.data.clubs.map(club => axios(`http://localhost:8000/clubs/${club.id}/players`));
          const playersByClub = await Promise.all(promiseArr);
-        const playersIds = playersByClub.map(players => players.data.players).flat().filter(player => player?.marketValue).map(player => player.id)
-        const playersPromises = playersIds.map(playerId => axios(`https://transfermarkt-api.fly.dev/players/${playerId}/profile`))
-        const requestPlayers = await Promise.all(playersPromises);
-         this.players = requestPlayers.map(player => {
+        const playersIds = playersByClub.map(players => players.data.players).flat().map(player => player.id);
+        const playersPromises = playersIds.map(playerId => axios(`http://localhost:8000/players/${playerId}/profile`));
+         const playersStatPromises = playersIds.map(playerId => axios(`http://localhost:8000/players/${playerId}/stats`))
+         const requestPlayers = await Promise.all(playersPromises);
+         const requestStatPlayers = await Promise.all(playersStatPromises);
+         this.players = {};
+         let i = 0
+        requestPlayers.forEach(player => {
              const clubId = player?.data?.club?.id;
              const club = clubsProfilesData.find(club => club?.data?.id === clubId);
              player.data.club = club?.data ? club?.data : player.data.club;
-             return player.data;
+             if (player.data.marketValue)
+             player.data.value = player.data.marketValue.includes('m') ? 1000 *Number(player.data.marketValue.replace(/\D/g, ""))  : Number(player.data.marketValue.replace(/\D/g, "")) ;
+            let goals = 0;
+            if(requestStatPlayers[i]?.data?.stats)
+                requestStatPlayers[i].data?.stats.filter(comp => comp.goals && comp.competitionID === 'ISR1').forEach(comp => goals += Number(comp.goals));
+            this.players[player.data?.id] = {
+                 name: player.data?.name,
+                 value: player.data?.value,
+                 marketValue: player.data?.marketValue,
+                 imageURL: player.data?.imageURL,
+                 club: {
+                     image: player.data?.club?.image
+                 },
+                totalGoals: goals
+             }
+             i++;
          });
-        fs.writeFileSync("./players.txt", JSON.stringify(this.players))
-     }
+             fs.writeFileSync("./players.txt", JSON.stringify(this.players));
+         }
 
 
 
