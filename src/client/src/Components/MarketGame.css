@@ -8,7 +8,7 @@
     margin: 0 auto;
 }
 
-.player-value, .next-player .final-player {
+.player-value, .next-player .final-player .next-team {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 15px;
     padding: 20px;
@@ -20,11 +20,14 @@
     height: 400px;
     width: 300px;
 }
+.next-team{
+    width: 500px;
+}
 
 .final-player{
     height: 170px;
 }
-.player-value:hover, .next-player:hover {
+.player-value:hover, .next-player:hover .next-team:hover{
     transform: translateY(-5px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
@@ -125,7 +128,7 @@ button:hover {
         padding: 20px;
     }
 
-    .player-value, .next-player {
+    .player-value, .next-player .next-team {
         padding: 15px;
     }
 

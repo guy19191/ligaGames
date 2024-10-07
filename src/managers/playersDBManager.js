@@ -18,7 +18,7 @@ export class playersDBManager{
      get players() {
         return this._players;
     }
-    
+
      set players(players) {
         this._players = players;
     }

@@ -1,4 +1,6 @@
 import {playersDBManager} from "./src/managers/playersDBManager.js"
+import {fifaDBManager} from "./src/managers/fifaDBMngr.js"
+
 import express from 'express';
 import marketRoutes from './src/routes/marketRoutes.js'
 const PORT = process.env.PORT || 3000;
@@ -9,6 +11,7 @@ const app = express();
 app.use(cors());
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import teamsRoutes from "./src/routes/teamsRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -16,8 +19,12 @@ const __dirname = dirname(__filename);
 async function run(){
     //Start getting all players
     const playersDB = playersDBManager.getInstance();
+    const fifaDB = fifaDBManager.getInstance();
+
     offline ? await playersDB.getOfflinePlayers() : await playersDB.getAllPlayers();
+    offline ? await fifaDB.getOfflineTeams() : await fifaDB.getAllTeams();
     app.use('/market', marketRoutes);
+    app.use('/teams', teamsRoutes);
     // Serve static files from the React app
     app.use(express.static(path.join(__dirname, 'src/client/build')));
 
