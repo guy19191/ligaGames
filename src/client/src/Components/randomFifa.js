@@ -88,11 +88,11 @@ const Fifa = () => {
                     <div className="settings-container">
                         <div className="setting">
                             <span>League Limit</span>
-                            <MultiSelect options={leagues} onChange={(leagues) => setChosenLeagues(leagues.map(league => league.value))}></MultiSelect>
+                            <MultiSelect options={leagues} defult={leagues.filter(league => chosenLeagues.includes(league.value))} onChange={(leagues) => setChosenLeagues(leagues.map(league => league.value))}></MultiSelect>
                         </div>
                         <div className="setting">
                             <span>Club Min Stars</span>
-                            <StarRating ratingDefault={minRating} onChange={(rating) => setMinRating(rating)} />
+                            <StarRating ratingDefult={minRating} onChange={(rating) => setMinRating(rating)} />
                         </div>
                         <div className="setting">
                             <StyledCheckbox

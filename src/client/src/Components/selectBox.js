@@ -1,7 +1,7 @@
 import React from 'react';
 import Select from 'react-select';
 
-const MultiSelect = ({ options, onChange }) => {
+const MultiSelect = ({ options, defult, onChange }) => {
     const customStyles = {
         control: (provided, state) => ({
             ...provided,
@@ -63,6 +63,7 @@ const MultiSelect = ({ options, onChange }) => {
         <div style={{ width: '100%', maxWidth: '300px' }}>
             <Select
                 options={options}
+                defaultValue={defult}
                 onChange={onChange}
                 isMulti
                 styles={customStyles}

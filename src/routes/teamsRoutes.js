@@ -9,7 +9,7 @@ router.get('/randomTeams', async (req, res) => {
     const minimumRating = minRating ? minRating : 3;
     const genderChoice = gender == 'true' ? 1 : 0;
     const nationsChoice = nation == 'true' ? false : true;
-    const leaguesChoice = leagues ? leagues : [];
+    const leaguesChoice = leagues ? leagues.split(",") : [];
     const fifaDB = fifaDBManager.getInstance();
     let clubs = Object.values(fifaDB.clubs).filter(club => Number(club.fifaStarRatings) >= Number(minimumRating));
     if (leaguesChoice.length !== 0){
