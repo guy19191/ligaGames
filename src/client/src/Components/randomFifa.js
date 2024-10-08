@@ -24,7 +24,7 @@ const Fifa = () => {
 
     const startGame = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/teams/randomTeams?minRating=${rating}&gender=${female}&nation=${nation}`);
+            const response = await fetch(`teams/randomTeams?minRating=${rating}&gender=${female}&nation=${nation}`);
             const arr = await response.json();
             const a = getRandomPlayerId(Object.keys(arr));
             let b = getRandomPlayerId(Object.keys(arr));
