@@ -44,14 +44,19 @@ export class fifaDBManager{
     }
 
     async getOfflineTeams(){
-        const teams = await fs.readFileSync("./fifa.txt")
+        const teams = await fs.readFileSync("./fifa.txt");
+        const leagues = await fs.readFileSync("./leagues.txt")
+        this.leagues = JSON.parse(leagues);
         this.clubs = JSON.parse(teams);
     }
     async getAllTeams(){
         const Promises = [];
         const allList = await axios('https://drop-api.ea.com/rating/ea-sports-fc/filters?locale=en');
         allList.data.teamGroups.forEach(league => {
-            this.leagues.push(league.label);
+            this.leagues.push({id: league.id,
+            name: league.label,
+                gender: league.gender.id
+            });
             league.teams.forEach(team => {
                 Promises.push(axios(`https://drop-api.ea.com/rating/ea-sports-fc?locale=en&offset=0&limit=15&team=${team.id}`));
                 if (league.gender.id){
@@ -68,7 +73,10 @@ export class fifaDBManager{
                 }
             });
         });
-        this.leagues.push('nationality');
+        this.leagues.push({id: "0",
+            name: 'nationality',
+            gender: 0
+        });
         const promise2 = []
         allList.data.nationality.forEach(nationality => {
             promise2.push(axios(`https://drop-api.ea.com/rating/ea-sports-fc?locale=en&offset=0&limit=15&nationality=${nationality.id}&gender=0`));
@@ -77,13 +85,14 @@ export class fifaDBManager{
                         imageUrl: nationality.imageUrl,
                         league: {
                             id: '0',
-                            name: 'nationality',
+                            name: 'Nationality',
                             gender: 0
                         },
                     }
         });
+        fs.writeFileSync("./leagues.txt", JSON.stringify(this.leagues));
         const requestedPlayers = await Promise.allSettled(Promises);
-        const requestedPlayersNations = await Promise.allSettled(promise2);
+            const requestedPlayersNations = await Promise.allSettled(promise2);
         requestedPlayers.forEach(teamPlayers => {
             let combinedRating = 0;
             const players = teamPlayers?.value?.data?.items
@@ -105,7 +114,6 @@ export class fifaDBManager{
             }
         });
         fs.writeFileSync("./fifa.txt", JSON.stringify(this.clubs));
-        fs.writeFileSync("./leagues.txt", JSON.stringify(this.leagues));
 
     }
 }

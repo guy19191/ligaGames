@@ -15,13 +15,18 @@ const StyledCheckbox = ({ label, id, initialChecked = false, onChange }) => {
         display: 'flex',
         alignItems: 'center',
         gap: '12px',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
+        width: '100%',
+        maxWidth: '300px',
+        margin: '10px 0',
     };
 
     const labelStyle = {
-        color: '#374151',
+        fontSize: '1.1em',
         fontWeight: '500',
         cursor: 'pointer',
+        color: '#00cec9',
+        flex: 1,
     };
 
     const checkboxContainerStyle = {
@@ -45,9 +50,9 @@ const StyledCheckbox = ({ label, id, initialChecked = false, onChange }) => {
         height: '24px',
         borderWidth: '2px',
         borderStyle: 'solid',
-        borderColor: isChecked ? '#3B82F6' : '#9CA3AF',
+        borderColor: isChecked ? '#ffd700' : 'rgba(255, 255, 255, 0.5)',
         borderRadius: '6px',
-        backgroundColor: isChecked ? '#3B82F6' : 'transparent',
+        backgroundColor: isChecked ? 'rgba(255, 215, 0, 0.2)' : 'transparent',
         cursor: 'pointer',
         transition: 'all 0.2s ease-in-out',
         display: 'flex',
@@ -58,16 +63,12 @@ const StyledCheckbox = ({ label, id, initialChecked = false, onChange }) => {
     const checkmarkStyle = {
         width: '16px',
         height: '16px',
-        color: 'white',
+        color: '#ffd700',
     };
 
     return (
         <div style={containerStyle}>
-            <label style={{
-                marginLeft: '16px',
-                fontSize: '18px',
-                fontWeight: '500'
-            }}>
+            <label style={labelStyle}>
                 {label}
             </label>
             <div style={checkboxContainerStyle}>

@@ -28,13 +28,13 @@ router.get('/randomTeams', async (req, res) => {
 
 router.get('/getLeagues', async (req, res) => {
     const{gender} = req.query;
-    const genderChoice = gender ? 1 : 0;
+    const genderChoice = gender == 'true' ? 1 : 0;
     const fifaDB = fifaDBManager.getInstance();
-    let leagues;
+    let leagues = fifaDB.leagues;
     if (genderChoice === 0){
-
+        leagues =leagues.filter(league => league.gender === 0);
     }
-    res.json(Object.values(fifaDB.clubs).filter(club => Number(club.fifaStarRatings) >= Number(minimumRating) && club.league.gender === 0));
+    res.json(leagues);
 });
 
 export default router;

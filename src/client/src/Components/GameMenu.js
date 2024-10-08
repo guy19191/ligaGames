@@ -5,7 +5,7 @@ const GameMenu = ({ onSelectGame }) => {
     const games = [
         { id: 'marketValue', name: 'Market Value Game', description: 'נחש את המחיר של שחקני ליגת העל' },
         { id: 'totalGoals', name: 'Goals Game', description: 'נחש את השערים של שחקני ליגת העל' },
-        { id: 'randomFifa25', name: 'Goals Game', description: 'Random Teams in fifa 25' }
+        { id: 'randomFifa25', name: 'Fifa Random Club', description: 'Random Teams in fifa 25' }
 
     ];
 

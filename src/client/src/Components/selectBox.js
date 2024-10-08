@@ -1,154 +1,74 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
+import Select from 'react-select';
 
-const MultiSelect = ({ options }) => {
-    const [isOpen, setIsOpen] = useState(false);
-    const [selectedOptions, setSelectedOptions] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [filteredOptions, setFilteredOptions] = useState(options);
-    const popupRef = useRef(null);
-
-    useEffect(() => {
-        setFilteredOptions(
-            options.filter(option =>
-                option.toLowerCase().includes(searchTerm.toLowerCase())
-            )
-        );
-    }, [searchTerm, options]);
-
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (popupRef.current && !popupRef.current.contains(event.target)) {
-                setIsOpen(false);
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
-
-    const toggleOption = (option) => {
-        setSelectedOptions(prevSelected =>
-            prevSelected.includes(option)
-                ? prevSelected.filter(item => item !== option)
-                : [...prevSelected, option]
-        );
-    };
-
-    const removeOption = (option) => {
-        setSelectedOptions(prevSelected => prevSelected.filter(item => item !== option));
-    };
-
-    const styles = {
-        container: {
-            width: '300px',
-            fontFamily: 'Arial, sans-serif',
-            position: 'relative'
-        },
-        select: {
-            padding: '10px',
-            border: '2px solid #3498db',
-            borderRadius: '5px',
-            backgroundColor: '#ecf0f1',
-            cursor: 'pointer',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-        },
-        popup: {
-            position: 'absolute',
-            top: '100%',
-            left: 0,
-            width: '100%',
-            marginTop: '5px',
-            backgroundColor: 'white',
-            border: '2px solid #3498db',
-            borderRadius: '5px',
-            boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-            zIndex: 1000,
-        },
-        searchInput: {
-            width: '100%',
-            padding: '10px',
-            border: 'none',
-            borderBottom: '1px solid #3498db',
-            outline: 'none',
-        },
-        optionsContainer: {
-            maxHeight: '200px',
-            overflowY: 'auto',
-        },
-        option: {
-            padding: '10px',
-            cursor: 'pointer',
-            transition: 'background-color 0.3s',
-        },
-        selectedOption: {
-            backgroundColor: '#3498db',
-            color: 'white',
-        },
-        selectedOptionsContainer: {
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '5px',
-            marginTop: '10px',
-        },
-        selectedOptionBadge: {
-            backgroundColor: '#3498db',
-            color: 'white',
-            padding: '5px 10px',
+const MultiSelect = ({ options, onChange }) => {
+    const customStyles = {
+        control: (provided, state) => ({
+            ...provided,
+            backgroundColor: 'rgba(224, 224, 224, 0.1)',
+            borderColor: state.isFocused ? '#ffd700' : 'rgba(224, 224, 224, 0.3)',
             borderRadius: '15px',
-            display: 'flex',
-            alignItems: 'center',
-        },
-        removeButton: {
-            marginLeft: '5px',
-            cursor: 'pointer',
-            fontWeight: 'bold',
-        },
+            padding: '5px',
+            boxShadow: state.isFocused ? '0 0 0 1px #ffd700' : null,
+            '&:hover': {
+                borderColor: '#ffd700',
+            },
+        }),
+        menu: (provided) => ({
+            ...provided,
+            backgroundColor: 'rgba(40, 44, 52, 0.9)',
+            borderRadius: '10px',
+            padding: '5px',
+        }),
+        option: (provided, state) => ({
+            ...provided,
+            backgroundColor: state.isSelected
+                ? 'rgba(255, 215, 0, 0.4)'
+                : state.isFocused
+                    ? 'rgba(255, 215, 0, 0.2)'
+                    : 'transparent',
+            color: state.isSelected ? '#fff' : '#e0e0e0',
+            '&:active': {
+                backgroundColor: 'rgba(255, 215, 0, 0.6)',
+            },
+        }),
+        multiValue: (provided) => ({
+            ...provided,
+            backgroundColor: 'rgba(255, 215, 0, 0.2)',
+            borderRadius: '10px',
+        }),
+        multiValueLabel: (provided) => ({
+            ...provided,
+            color: '#e0e0e0',
+        }),
+        multiValueRemove: (provided) => ({
+            ...provided,
+            color: '#e0e0e0',
+            '&:hover': {
+                backgroundColor: 'rgba(255, 0, 0, 0.5)',
+                color: '#fff',
+            },
+        }),
+        input: (provided) => ({
+            ...provided,
+            color: '#e0e0e0',
+        }),
+        singleValue: (provided) => ({
+            ...provided,
+            color: '#e0e0e0',
+        }),
     };
 
     return (
-        <div style={styles.container}>
-            <div style={styles.select} onClick={() => setIsOpen(!isOpen)}>
-                <span>{selectedOptions.length ? `${selectedOptions.length} selected` : 'Select options'}</span>
-                <span>{isOpen ? '▲' : '▼'}</span>
-            </div>
-            {isOpen && (
-                <div style={styles.popup} ref={popupRef}>
-                    <input
-                        type="text"
-                        placeholder="Search..."
-                        style={styles.searchInput}
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        onClick={(e) => e.stopPropagation()}
-                    />
-                    <div style={styles.optionsContainer}>
-                        {filteredOptions.map(option => (
-                            <div
-                                key={option}
-                                style={{
-                                    ...styles.option,
-                                    ...(selectedOptions.includes(option) ? styles.selectedOption : {})
-                                }}
-                                onClick={() => toggleOption(option)}
-                            >
-                                {option}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
-            <div style={styles.selectedOptionsContainer}>
-                {selectedOptions.map(option => (
-                    <div key={option} style={styles.selectedOptionBadge}>
-                        {option}
-                        <span style={styles.removeButton} onClick={() => removeOption(option)}>×</span>
-                    </div>
-                ))}
-            </div>
+        <div style={{ width: '100%', maxWidth: '300px' }}>
+            <Select
+                options={options}
+                onChange={onChange}
+                isMulti
+                styles={customStyles}
+                className="multi-select"
+                classNamePrefix="select"
+            />
         </div>
     );
 };
