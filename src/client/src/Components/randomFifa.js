@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import './MarketGame.css';
 import Player from './Player';
-import GameControls from './GameControls';
 import StarRating from "./StarRating";
+import { checkBox } from 'lucide-react';
+import StyledCheckbox from "./checkbox";
+import MultiSelect from "./selectBox";
 
 
 const Fifa = () => {
     const [team1, setTeam1] = useState(null);
     const [team2, setTeam2] = useState(null);
-    const [rating, setRating] = useState({});
+    const [rating, setRating] = useState("5");
+    const [female, setFemale] = useState(false);
+    const [nation, setNation] = useState(false);
 
     useEffect(() => {
     }, []);
@@ -20,8 +24,7 @@ const Fifa = () => {
 
     const startGame = async () => {
         try {
-            filter();
-            const response = await fetch(`teams/randomTeams?minRating=${rating}`);
+            const response = await fetch(`http://localhost:3000/teams/randomTeams?minRating=${rating}&gender=${female}&nation=${nation}`);
             const arr = await response.json();
             const a = getRandomPlayerId(Object.keys(arr));
             let b = getRandomPlayerId(Object.keys(arr));
@@ -33,16 +36,6 @@ const Fifa = () => {
             setTeam2(arr[b]);
         } catch (error) {
             console.error('Error fetching player data:', error);
-        }
-    };
-
-    const filter = () => {
-        //league
-
-        //rating
-
-        return {
-
         }
     };
 
@@ -74,14 +67,36 @@ const Fifa = () => {
 
                 ) : (
                 <div className="game-over">
-                    <h2>Minimal Rating</h2>
+                    <h2>Clubs Settings</h2>
                     <div className="final-player">
-                        <StarRating onChange={(newRating) => setRating(newRating)} />
+                            <span>Club Min Stars</span>
+                    <div>
+                        <StarRating ratingDefult={rating} onChange={(newRating) => setRating(newRating)} />
+                    </div>
+                        <div>
+                        <div>
+                        <StyledCheckbox
+                            id="female-checkbox"
+                            label="Allow Nation teams"
+                            initialChecked={nation}
+                            onChange={setNation}
+                        />
+                        </div>
+                        <div>
+                        <StyledCheckbox
+                                id="female-checkbox"
+                                label="Allow Female Clubs"
+                                initialChecked={female}
+                                onChange={setFemale}/>
+                        </div>
+                            </div>
+                            <div>
+                        </div>
                     </div>
                     <button onClick={restartGame}>Pick Teams</button>
-                </div>
-                )}
 
+                </div>
+            )}
         </div>
     );
 };

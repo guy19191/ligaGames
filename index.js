@@ -26,7 +26,7 @@ async function run(){
     app.use('/market', marketRoutes);
     app.use('/teams', teamsRoutes);
     // Serve static files from the React app
-    app.use(express.static(path.join(__dirname, 'src/client/build')));
+    //app.use(express.static(path.join(__dirname, 'src/client/build')));
 
 // Handle requests for routes not handled by static files
     app.get('*', (req, res) => {

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Star } from 'lucide-react';
 
-const StarRating = ({ onChange }) => {
-    const [rating, setRating] = useState(0);
+const StarRating = ({ onChange ,ratingDefult}) => {
+    const [rating, setRating] = useState(ratingDefult);
     const [hover, setHover] = useState(0);
 
     const handleMouseMove = (e, index) => {
@@ -34,14 +34,15 @@ const StarRating = ({ onChange }) => {
                     position: 'relative',
                     cursor: 'pointer',
                     display: 'inline-block',
-                    margin: '0 12px',
+                    margin: '0 8px',
                     direction: 'ltr'
                 }}
                 onMouseMove={(e) => handleMouseMove(e, index)}
+                onMouseLeave={handleMouseLeave}
                 onClick={handleClick}
             >
                 <Star
-                    size={70}
+                    size={48}
                     style={{
                         color: '#D1D5DB', // text-gray-300 equivalent
                         fill: 'none',
@@ -59,7 +60,7 @@ const StarRating = ({ onChange }) => {
                     }}
                 >
                     <Star
-                        size={70}
+                        size={48}
                         style={{
                             fill: 'rgb(250 204 21)',
                             stroke: 'rgb(250 204 21)'
@@ -71,23 +72,10 @@ const StarRating = ({ onChange }) => {
     };
 
     return (
-        <div
-            style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                direction: 'ltr'
-            }}
-            onMouseLeave={handleMouseLeave}
-        >
+            <div>
             {[0, 1, 2, 3, 4].map(renderStar)}
-            <span style={{
-                marginLeft: '16px',
-                fontSize: '18px',
-                fontWeight: '500'
-            }}>
-      </span>
         </div>
+
     );
 };
 

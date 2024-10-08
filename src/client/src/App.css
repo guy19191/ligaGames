@@ -28,6 +28,32 @@ body {
   line-height: 1.6;
 }
 
+.table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+table {
+  table-layout: fixed;
+}
+
+th {
+  border: solid 1px;
+  flex: 1;
+}
+
+th {
+}
+
+tr {
+  display: flex;
+  flex-wrap: wrap;
+  flex: auto;
+  white-space: pre-line;
+
+}
+
+
 .app {
   text-align: center;
   max-width: 800px;

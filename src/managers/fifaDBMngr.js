@@ -8,7 +8,7 @@ export class fifaDBManager{
     static instance;
 
     constructor(){
-        this.leagues = ["nationality"]
+        this.leagues = []
         this.clubs = {};
     }
 
@@ -54,30 +54,77 @@ export class fifaDBManager{
             this.leagues.push(league.label);
             league.teams.forEach(team => {
                 Promises.push(axios(`https://drop-api.ea.com/rating/ea-sports-fc?locale=en&offset=0&limit=15&team=${team.id}`));
+                if (league.gender.id){
+                    team.label = team.label + ' .F'
+                }
                 this.clubs[team.id] = {
                     name: team.label,
                     imageUrl: team.imageUrl,
                     league: {
+                        id: league.id,
                         name: league.label,
                         gender: league.gender.id
                     },
                 }
-            })
+            });
+        });
+        this.leagues.push('nationality');
+        const promise2 = []
+        allList.data.nationality.forEach(nationality => {
+            promise2.push(axios(`https://drop-api.ea.com/rating/ea-sports-fc?locale=en&offset=0&limit=15&nationality=${nationality.id}&gender=0`));
+                    this.clubs[`0${nationality.id}`] = {
+                        name: nationality.label,
+                        imageUrl: nationality.imageUrl,
+                        league: {
+                            id: '0',
+                            name: 'nationality',
+                            gender: 0
+                        },
+                    }
         });
         const requestedPlayers = await Promise.allSettled(Promises);
-        let i = 0;
+        const requestedPlayersNations = await Promise.allSettled(promise2);
         requestedPlayers.forEach(teamPlayers => {
             let combinedRating = 0;
             const players = teamPlayers?.value?.data?.items
-            if(players) {
+            if(players && players.length !=0 && players.length > 10) {
                 players.forEach(player => combinedRating += player.overallRating);
                 combinedRating /= players.length;
                 this.clubs[players[0]?.team?.id].rating = combinedRating;
+                this.clubs[players[0]?.team?.id].fifaStarRatings = fifaStarRatings(combinedRating);
             }
             });
+        requestedPlayersNations.forEach(teamPlayers => {
+            let combinedRating = 0;
+            const players = teamPlayers?.value?.data?.items
+            if(players && players.length !=0 && players.length > 10) {
+                players.forEach(player => combinedRating += player.overallRating);
+                combinedRating /= players.length;
+                this.clubs[`0${players[0]?.nationality?.id}`].rating = combinedRating;
+                this.clubs[`0${players[0]?.nationality?.id}`].fifaStarRatings = fifaStarRatings(combinedRating);
+            }
+        });
         fs.writeFileSync("./fifa.txt", JSON.stringify(this.clubs));
+        fs.writeFileSync("./leagues.txt", JSON.stringify(this.leagues));
+
     }
+}
 
-
-
+function fifaStarRatings(rating){
+        if (rating >=82)
+            return "5";
+    else if (rating >=80)
+            return "4.5"
+        else if ( rating >=76)
+            return "4"
+else if ( rating >= 70)
+            return "3.5"
+else if ( rating >= 65)
+            return "3"
+else if ( rating >= 60)
+            return "2.5"
+else if ( rating >= 55)
+            return "2"
+        else
+            return "0"
 }

@@ -5,27 +5,36 @@ import {fifaDBManager} from "../managers/fifaDBMngr.js";
 const router = express.Router();
 
 router.get('/randomTeams', async (req, res) => {
-    const{ minRating } = req.query
-    let mininumRating = minRating ? minRating : 3;
+    const{ minRating, gender, leagues, nation } = req.query;
+    const minimumRating = minRating ? minRating : 3;
+    const genderChoice = gender == 'true' ? 1 : 0;
+    const nationsChoice = nation == 'true' ? false : true;
+    const leaguesChoice = leagues ? leagues : [];
     const fifaDB = fifaDBManager.getInstance();
-    switch (mininumRating) {
-        case "5":
-        mininumRating = 82;
-        break;
-        case "4.5":
-        mininumRating  = 80;
-        break;
-    case "4":
-        mininumRating  = 76;
-        break;
-    case "3.5":
-        mininumRating = 70
-        break;
-     default:
-        mininumRating = 50;
-        break;
+    let clubs = Object.values(fifaDB.clubs).filter(club => Number(club.fifaStarRatings) >= Number(minimumRating));
+    if (leaguesChoice.length !== 0){
+        clubs = clubs.filter(club => leaguesChoice.includes(club.league.id));
+    }
+    else {
+        if (genderChoice === 0){
+            clubs = clubs.filter(club => club.league.gender === 0);
         }
-    res.json(Object.values(fifaDB.clubs).filter(club => club.rating >= mininumRating && club.league.gender === 0));
+        if (nationsChoice){
+            clubs = clubs.filter(club => club.league.id !== "0");
+        }
+    }
+    res.json(clubs);
+});
+
+router.get('/getLeagues', async (req, res) => {
+    const{gender} = req.query;
+    const genderChoice = gender ? 1 : 0;
+    const fifaDB = fifaDBManager.getInstance();
+    let leagues;
+    if (genderChoice === 0){
+
+    }
+    res.json(Object.values(fifaDB.clubs).filter(club => Number(club.fifaStarRatings) >= Number(minimumRating) && club.league.gender === 0));
 });
 
 export default router;
